@@ -1,0 +1,57 @@
+main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 5px;
+    scrollbar-width: none;
+}
+
+section.system {
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    border: none;
+    opacity: 70%;
+}
+
+section.assistant {
+    float: left;
+    display: block;
+}
+
+section.user {
+    width: 80%;
+    float: right;
+    display: block;
+}
+
+section.tool {
+    all: unset;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    color: gray;
+    float:left;
+}
+
+#input {
+    display: flex;
+    gap: 10px
+}
+
+#input input {
+    /* display */
+    outline: none;
+    border: 1px solid black;
+    border-radius: 5px;
+
+    /* layout */
+    flex: 1;
+    padding: 10px;
+}

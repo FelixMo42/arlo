@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FeBot</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="./js/chat.js" defer></script>
+
+    <link rel="stylesheet" href="/css/core.css" />
+    <link rel="stylesheet" href="/css/agent.css" />
+</head>
+
+<body hx-ext="stream">
+    <main>
+        <div id="messages">
+            {{ range .Messages }}
+                <section class="{{.Role}}">
+                    <p>{{.Content}}</p>
+                </section>
+            {{ end }}
+        </div>
+        <form id="input">
+            <input
+                type="text"
+                name="message"
+                autocomplete="off"
+                autofocus
+            />
+        </form>
+    </main>
+</body>
+
+</html>

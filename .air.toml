@@ -1,0 +1,9 @@
+[build]
+cmd = "set -a; source .env; set -b; ./kill.sh; go run src/*.go"
+bin = "tmp/main"
+delay = 1000
+kill_delay = 10
+send_interrupt = false
+
+[misc]
+clean_on_exit = true
