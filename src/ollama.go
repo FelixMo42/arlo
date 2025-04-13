@@ -26,7 +26,7 @@ func Ask(messages []Message, cb func(response string)) (string, error) {
 
 	err := PostJsonStream(url, body, func(chunk Chunk) bool {
 		message += chunk.Message.Content
-		cb(message)
+		cb(chunk.Message.Content)
 		return chunk.Done
 	})
 

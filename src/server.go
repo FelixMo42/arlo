@@ -49,8 +49,8 @@ func setupServer() {
 		w.Header().Set("Transfer-Encoding", "chunked")
 
 		// llm response
-		err := chat(jsonData.Message, func(prog string) {
-			w.Write([]byte(prog))
+		err := chat(jsonData.Message, func(chunk string) {
+			w.Write([]byte(chunk))
 			flusher.Flush()
 		})
 
