@@ -15,7 +15,7 @@ func setupServer() {
 	// Make sure the index page works
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "agent.html", gin.H{
-			"Messages": messages,
+			"Messages": messages[1:],
 		})
 	})
 

@@ -6,13 +6,9 @@ type Message struct {
 }
 
 var messages = []Message{
-	{ // add system prompt
+	{
 		Role:    "system",
 		Content: MD("chat-system-prompt", nil),
-	},
-	{ // add the opening question
-		Role:    "assistant",
-		Content: "What can I help you with?",
 	},
 }
 
