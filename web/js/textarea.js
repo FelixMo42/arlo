@@ -1,14 +1,12 @@
 function auto_grow(element) {
     element.style.height = "5px";
-    element.style.height = Math.max(element.scrollHeight, 45) + "px";
+    element.style.height = element.scrollHeight + "px";
+    window.scrollTo(0, document.body.scrollHeight) 
 }
 
-htmx.onLoad((content) => {
-    content
-        .querySelectorAll("textarea")
-        .forEach(area => {
-            auto_grow(area)
-            area.oninput = () => auto_grow(area)
-        })
-})
-
+document
+    .querySelectorAll("textarea")
+    .forEach(textarea => {
+        auto_grow(textarea)
+        textarea.addEventListener("keypress", () => auto_grow(textarea))
+    })

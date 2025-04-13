@@ -1,36 +1,25 @@
-main {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+#messages div {
+    margin-bottom: 20px;
+    white-space-collapse: preserve;
 }
 
-#messages {
-    flex: 1;
-    overflow-y: scroll;
-    padding: 5px;
-    scrollbar-width: none;
+#messages div.system {
+    padding: 0px 50px;
+    opacity: 50%;
 }
 
-section.system {
-    width: 80%;
-    margin-right: auto;
-    margin-left: auto;
-    border: none;
-    opacity: 70%;
-}
-
-section.assistant {
-    float: left;
+#messages div.assistant {
     display: block;
 }
 
-section.user {
-    width: 80%;
-    float: right;
+#messages div.user {
     display: block;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
 }
 
-section.tool {
+#messages div.tool {
     all: unset;
     display: block;
     width: 100%;
@@ -41,17 +30,21 @@ section.tool {
 }
 
 #input {
-    display: flex;
-    gap: 10px
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
 }
 
-#input input {
+#input textarea {
     /* display */
     outline: none;
-    border: 1px solid black;
+    border: none;
     border-radius: 5px;
 
     /* layout */
-    flex: 1;
-    padding: 10px;
+    width: 100%;
+    padding: 0px;
+
+    /* functionality */
+    resize: none;    
 }

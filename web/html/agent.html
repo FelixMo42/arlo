@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <script src="./js/chat.js" defer></script>
+    <script src="./js/textarea.js" defer></script>
 
     <link rel="stylesheet" href="/css/core.css" />
     <link rel="stylesheet" href="/css/agent.css" />
@@ -17,20 +18,17 @@
 <body hx-ext="stream">
     <main>
         <div id="messages">
-            {{ range .Messages }}
-                <section class="{{.Role}}">
-                    <p>{{.Content}}</p>
-                </section>
+            {{ range .Messages}}
+                <div class="{{.Role}}">{{.Content}}</div>
             {{ end }}
         </div>
-        <form id="input">
-            <input
+        <div id="input">
+            <textarea
                 type="text"
                 name="message"
-                autocomplete="off"
                 autofocus
-            />
-        </form>
+            ></textarea>
+        </div>
     </main>
 </body>
 
