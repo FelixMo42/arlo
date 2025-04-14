@@ -14,8 +14,18 @@ func setupServer() {
 
 	// Make sure the index page works
 	router.GET("/", func(c *gin.Context) {
+		messages, err := LoadJson[[]Message]("./dat/conversation.json")
+
+		if err != nil {
+			messages = []Message{}
+		} else {
+			messages = messages[1:]
+		}
+
+		println(len(messages))
+
 		c.HTML(200, "agent.html", gin.H{
-			"Messages": messages[1:],
+			"Messages": messages,
 		})
 	})
 
@@ -24,32 +34,17 @@ func setupServer() {
 		type MessageRequest struct {
 			Message string `json:"message"`
 		}
-		var jsonData MessageRequest
-		if err := c.BindJSON(&jsonData); err != nil {
-			// TODO: Better error handling
-			println("ERR: failed to parse JSON")
-			return
-		}
-		if jsonData.Message == "" {
-			// TODO: Better error handling
-			println("ERR: empty message string")
-			return
-		}
-
-		w := c.Writer
-		flusher, ok := w.(http.Flusher)
-		if !ok {
-			c.String(http.StatusInternalServerError, "Streaming unsupported")
-			return
-		}
+		body, _ := ReadJsonBody[MessageRequest](c)
 
 		//
+		w := c.Writer
+		flusher, _ := w.(http.Flusher)
 		w.Header().Set("Content-Type", "text")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Transfer-Encoding", "chunked")
 
 		// llm response
-		err := chat(jsonData.Message, func(chunk string) {
+		err := chat(body.Message, func(chunk string) {
 			w.Write([]byte(chunk))
 			flusher.Flush()
 		})

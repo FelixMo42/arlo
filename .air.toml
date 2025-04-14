@@ -4,6 +4,7 @@ bin = "tmp/main"
 delay = 1000
 kill_delay = 10
 send_interrupt = false
+exclude_dir = ["dat"]
 
 [misc]
 clean_on_exit = true

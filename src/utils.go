@@ -6,7 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"text/template"
+
+	"github.com/gin-gonic/gin"
 )
 
 type HttpError struct {
@@ -77,4 +80,53 @@ func MD(file string, data any) string {
 	}
 
 	return buf.String()
+}
+
+func ReadJsonBody[T any](c *gin.Context) (T, error) {
+	var data T
+
+	if err := c.BindJSON(&data); err != nil {
+		return data, err
+	}
+
+	return data, nil
+}
+
+func LoadJson[T any](path string) (T, error) {
+	var data T
+
+	// Open the JSON file
+	file, err := os.Open(path)
+	if err != nil {
+		return data, err
+	}
+	defer file.Close()
+
+	// Decode the JSON into a struct
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&data)
+	if err != nil {
+		return data, err
+	}
+
+	return data, nil
+}
+
+func SaveJson[T any](path string, data T) error {
+	// Create a file
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Create JSON encoder and write to file
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Optional: pretty print
+	err = encoder.Encode(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

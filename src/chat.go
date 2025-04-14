@@ -5,35 +5,37 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-var messages = []Message{
-	{
-		Role:    "system",
-		Content: MD("chat-system-prompt", nil),
-	},
-}
-
-func addMessage(message Message) {
-	messages = append(messages, message)
-}
-
 func chat(prompt string, cb func(chunk string)) error {
-	// add user response to the message log
-	addMessage(Message{
+	messages, err := LoadJson[[]Message]("./dat/conversation.json")
+
+	// If no log could be found, create a new conversation
+	if err != nil {
+		messages = []Message{
+			{
+				Role:    "system",
+				Content: MD("chat-system-prompt", nil),
+			},
+		}
+	}
+
+	// Add user response to the message log
+	messages = append(messages, Message{
 		Role:    "user",
 		Content: prompt,
 	})
 
-	// llm response
+	// LLM response
 	response, err := Ask(messages, cb)
 	if err != nil {
 		return err
 	}
 
-	// add response message
-	addMessage(Message{
+	// Add response message
+	messages = append(messages, Message{
 		Role:    "assistant",
 		Content: response,
 	})
 
-	return nil
+	// Save out the conversation
+	return SaveJson("dat/conversation.json", messages)
 }
