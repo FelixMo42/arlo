@@ -13,7 +13,7 @@ func chat(prompt string, cb func(chunk string)) error {
 		messages = []Message{
 			{
 				Role:    "system",
-				Content: MD("chat-system-prompt", nil),
+				Content: MD(SystemPrompt, nil),
 			},
 		}
 	}
