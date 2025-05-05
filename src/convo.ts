@@ -2,11 +2,15 @@ import { writeFile } from "node:fs/promises";
 import { chat, Message } from "./utils.ts";
 
 const user = `
-**Goal:** I'm make an autonomous, task-oriented AI assistant tool that can help work on my research, writing & coding tasks while the I'm asleep, focusing on quality over speed.
+**Goal:** I'm make an autonomous, task-oriented AI assistant tool that can do research for me while I'm asleep, focusing on quality over speed. This is a learning project, so I want to make as much as I can my self without use libraries or servies. The whole thing should be locally hosted on my laptop.
 
-**Implementation:** The plan is to implement my own multi-agent framework in the style of autogen using ollama and ts. Right now it consists of a teacher and a student talking to each other about the desired task.
+**Implementation:** The plan is to implement my own multi-agent framework in the style of autogen using ollama and ts.
 
-**Issues:** I have a markdown document I want them to work out. Can you walk me threw an example of how they would get the document, reaserch missing details, and update it? Ideally while rewriting the least possible. Assume error handling is not a problem.
+**Needed features:**
+* Site sources
+* Reaserch web
+
+**Questions:** What is the best way to build this? What are the techniques and concepts I need to understand to make this?
 `.trim()
 
 const agents = [

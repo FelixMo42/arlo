@@ -20,12 +20,16 @@ export async function chat(messages: Message[]): Promise<string> {
         method: "POST",
         body: JSON.stringify({
             stream: false,
-            model: "llama3.1",
+            model: "gemma3:27b",
             messages
         })
     }).then(response => response.json())
 
-    return response.message.content
+    try {
+        return response.message.content
+    } catch {
+        console.error("Can't read .message.content from ", response)
+    }
 }
 
 export async function readJSON<T>(path: string): Promise<T> {
