@@ -1,14 +1,10 @@
 {
   "name": "agent",
   "version": "0.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
+  "main": "src/main.ts",
+  "scripts": {},
+  "author": "Felix Moses <felix@tacocat.com>",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@libsql/client": "^0.15.4"
-  }
+  "dependencies": {}
 }

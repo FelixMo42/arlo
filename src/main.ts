@@ -42,7 +42,7 @@ async function main() {
             content: response
         })
 
-        writeFile("./log.md", messages.map(message => message.content).join("\n\n"))
+        writeFile("./out/log.md", messages.map(message => message.content).join("\n\n"))
     }
 }
 
