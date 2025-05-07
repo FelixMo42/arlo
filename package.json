@@ -1,10 +1,12 @@
 {
-  "name": "agent",
+  "name": "alto",
   "version": "0.0.0",
   "main": "src/main.ts",
-  "scripts": {},
+  "scripts": {
+    "start": "deno run --allow-all src/main.ts"
+  },
   "author": "Felix Moses <felix@tacocat.com>",
   "license": "ISC",
-  "description": "",
+  "description": "My AI personal assistant",
   "dependencies": {}
 }
