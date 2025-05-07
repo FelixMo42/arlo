@@ -44,6 +44,20 @@ async function main() {
 
         writeFile("./out/log.md", messages.map(message => message.content).join("\n\n"))
     }
+    
+    writeFile("./out/report.md", await chat([
+        {
+            role: "system",
+            content: [
+                "You are a helpfull assistant.",
+                "Using the provided conversation write a report awnsering the inital question.",
+                "CONVERSATION:",
+                ...messages,
+                "SUMMARY:"
+            ].join("\n")
+        },
+        ...messages
+    ]))
 }
 
 main()
