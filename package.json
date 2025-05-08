@@ -8,5 +8,10 @@
   "author": "Felix Moses <felix@tacocat.com>",
   "license": "ISC",
   "description": "My AI personal assistant <3",
-  "dependencies": {}
+  "dependencies": {
+    "fast-xml-parser": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.16"
+  }
 }

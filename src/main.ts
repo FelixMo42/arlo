@@ -1,5 +1,5 @@
 import { writeFile } from "node:fs/promises";
-import { chat, Message } from "./utils.ts";
+import { chat, Message } from "./ollama.ts";
 
 const user = `
 **Goal:** I'm make an autonomous, task-oriented AI assistant tool that can do research for me while I'm asleep, focusing on quality over speed. This is a learning project, so I want to make as much as I can my self without use libraries or servies. The whole thing should be locally hosted on my laptop.
