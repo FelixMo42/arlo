@@ -8,7 +8,9 @@ const user = `
 
 **Needed features:**
 * Site sources
-* Reaserch web
+* Search web
+* No human intervention
+* Research literature review
 
 **Questions:** What is the best way to build this? What are the techniques and concepts I need to understand to make this?
 `.trim()

@@ -5,7 +5,7 @@ import { chat } from "../ollama.ts"
 const ARXIV_LIBRARIAN_AGENT_PROMPT = `
 You are an expert research assistant who specializes in helping users find academic papers on arXiv.
 
-Your task is to take a user's natural-language research question or interest and convert it into a valid arXiv API search query string.
+Your task is to take a user's research question or interest and convert it into a valid arXiv API search query string.
 
 Follow these rules:
 
@@ -34,6 +34,8 @@ query "cat:cs.CL AND large language models AND reasoning"
 Only output the query string (no explanation, no formatting, no quotation marks).
 `.trim()
 
+const ARXIC_API_URL = "http://export.arxiv.org/api/query"
+
 interface ArticleHeader {
     id: string
     title: string
@@ -60,7 +62,21 @@ export async function arxivLibrarianAgent(question: string) {
 }
 
 async function query(q: string): Promise<ArticleHeader[]> {
-    const url = "http://export.arxiv.org/api/query"
-    const text = await cache(`${url}?search_query=${q}`)
-    return XML_PARSER.parse(text).feed.entry as ArticleHeader[]
+    const text = await cache(`${ARXIC_API_URL}?search_query=${q}`)
+
+    return XML_PARSER.parse(text).feed.entry.map((entry: any) => ({
+        id: entry.id,
+        title: entry.title,
+        summary: entry.summary,
+        published: entry.published,
+        updated: entry.updated
+    })) as ArticleHeader[]
 }
+
+async function test() {
+    const question = "I'm trying to use an LLM to do automated literature reviews."
+    const query = await arxivLibrarianAgent(question)
+    console.log(query)
+}
+
+test()

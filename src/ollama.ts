@@ -1,3 +1,5 @@
+import { withCache } from "./cache"
+
 const OLLAMA_URL = "http://127.0.0.1:11434"
 const CHAT_MODEL = "gemma3:12b-it-qat"
 const EMBED_MODEL = "nomic-embed-text"
@@ -24,23 +26,24 @@ export async function chatJSON<T>(messages: Message[]): Promise<T> {
     }
 }
 
-
 export async function chat(messages: Message[]): Promise<string> {
-    const response = await fetch(`${OLLAMA_URL}/api/chat`, {
-        method: "POST",
-        body: JSON.stringify({
-            stream: false,
-            model: CHAT_MODEL,
-            messages
-        })
-    }).then(response => response.json())
+    return withCache(messages, async () => {
+        const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+            method: "POST",
+            body: JSON.stringify({
+                stream: false,
+                model: CHAT_MODEL,
+                messages
+            })
+        }).then(response => response.json())
 
-    try {
-        return response.message.content
-    } catch {
-        console.error("Can't read .message.content from ", response)
-        return "ERROR!"
-    }
+        try {
+            return response.message.content
+        } catch {
+            console.error("Can't read .message.content from ", response)
+            return "ERROR!"
+        }
+    })
 }
 
 export async function embed(input: string): Promise<number[]>;
