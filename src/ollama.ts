@@ -26,6 +26,21 @@ export async function chatJSON<T>(messages: Message[]): Promise<T> {
     }
 }
 
+export async function doTask(task: string, userMessage: string): Promise<string> {
+    const messages: Message[] = [
+        {
+            role: "system",
+            content: task
+        },
+        {
+            role: "user",
+            content: userMessage
+        }
+    ]
+
+    return chat(messages)
+}
+
 export async function chat(messages: Message[]): Promise<string> {
     return withCache(messages, async () => {
         const response = await fetch(`${OLLAMA_URL}/api/chat`, {

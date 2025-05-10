@@ -1,14 +1,16 @@
 import { XMLParser } from "fast-xml-parser"
 import { cache } from "../cache.ts"
-import { chat } from "../ollama.ts"
+import { chat, doTask } from "../ollama.ts"
+import { filterAsync } from "../utils.ts"
 
-const ARXIV_LIBRARIAN_AGENT_PROMPT = `
+const ARXIC_LIBRARIAN_AGENT_YOUARE = `
 You are an expert research assistant who specializes in helping users find academic papers on arXiv.
+`.trim()
 
+const ARXIV_LIBRARIAN_AGENT_TASK_SEARCH = `${ARXIC_LIBRARIAN_AGENT_YOUARE}
 Your task is to take a user's research question or interest and convert it into a valid arXiv API search query string.
 
 Follow these rules:
-
 1. Always return a concise "search_query" value as a plain string, ready to be inserted in the "http://export.arxiv.org/api/query?search_query=<QUERY>" parameter.
 2. Use arXiv subject categories where appropriate (e.g., "cat:cs.LG" for machine learning, "cat:cs.CL" for computational linguistics, etc.).
 3. Use "AND" or "OR" to combine multiple concepts when relevant.
@@ -34,6 +36,23 @@ query "cat:cs.CL AND large language models AND reasoning"
 Only output the query string (no explanation, no formatting, no quotation marks).
 `.trim()
 
+const ARXIV_LIBRARIAN_AGENT_TASK_FILTER = `${ARXIC_LIBRARIAN_AGENT_YOUARE}
+Your task is to determine if a given arXiv article is relevant to the user's research question.
+
+Follow these rules:
+1. Read the provided article summary and the user's research question.
+2. Answer with "YES" if the article is relevant, or "NO" if it is not.
+3. Give reasone step by step why you think the article is relevant or not.
+4. Do not include any other information or formatting in your response.
+5. Be selective in what you consider relevant
+6. Only say "YES" if the article is DIRECTLY related to the user's question.
+7. Say "NO" if the article is not directly related to the user's question.
+
+Format:
+Reasoning: <your step by step reasoning here>
+Answer: <YES or NO>
+`
+
 const ARXIC_API_URL = "http://export.arxiv.org/api/query"
 
 interface ArticleHeader {
@@ -47,21 +66,34 @@ interface ArticleHeader {
 const XML_PARSER = new XMLParser()
 
 export async function arxivLibrarianAgent(question: string) {
-    const q = await chat([
-        {
-            role: "system",
-            content: ARXIV_LIBRARIAN_AGENT_PROMPT
-        },
-        {
-            role: "user",
-            content: question
-        }
-    ])
+    const query = await doTask(
+        ARXIV_LIBRARIAN_AGENT_TASK_SEARCH,
+        question
+    )
 
-    return query(q)
+    const headers = await queryArXiv(query)
+
+    const relevant_headers = await filterAsync(headers, async (header) => {
+        const awnser = await doTask(
+            ARXIV_LIBRARIAN_AGENT_TASK_FILTER,
+            `Is this article relevant to the question "${question}"?
+            Article title: ${header.title}
+            Summary: ${header.summary}
+            `.trim()
+        )
+
+        console.log("=====")
+        console.log("TITLE: ", header.title)
+        console.log("SUMMARY: ", header.summary, "\n")
+        console.log(awnser)
+
+        return awnser.trim().endsWith("YES")
+    })
+
+    return relevant_headers
 }
 
-async function query(q: string): Promise<ArticleHeader[]> {
+async function queryArXiv(q: string): Promise<ArticleHeader[]> {
     const text = await cache(`${ARXIC_API_URL}?search_query=${q}`)
 
     return XML_PARSER.parse(text).feed.entry.map((entry: any) => ({
@@ -76,7 +108,7 @@ async function query(q: string): Promise<ArticleHeader[]> {
 async function test() {
     const question = "I'm trying to use an LLM to do automated literature reviews."
     const query = await arxivLibrarianAgent(question)
-    console.log(query)
+    console.log(query.length)
 }
 
 test()

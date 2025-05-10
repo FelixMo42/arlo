@@ -1,5 +1,10 @@
 import { readFile } from "node:fs/promises";
 
+export async function filterAsync<T>(array: T[], filter: (item: T) => Promise<boolean>): Promise<T[]> {
+    const results = await Promise.all(array.map(filter))
+    return array.filter((_, index) => results[index])
+}
+
 export async function readJSON<T>(path: string): Promise<T> {
     const text = await readFile(path, "utf-8")
     return JSON.parse(text)
