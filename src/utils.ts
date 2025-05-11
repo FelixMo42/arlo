@@ -5,6 +5,11 @@ export async function filterAsync<T>(array: T[], filter: (item: T) => Promise<bo
     return array.filter((_, index) => results[index])
 }
 
+export async function mapAsync<T, U>(array: T[], map: (item: T) => Promise<U>): Promise<U[]> {
+    const results = await Promise.all(array.map(map))
+    return results
+}
+
 export async function readJSON<T>(path: string): Promise<T> {
     const text = await readFile(path, "utf-8")
     return JSON.parse(text)

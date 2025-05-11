@@ -9,9 +9,11 @@
   "license": "ISC",
   "description": "My AI personal assistant <3",
   "dependencies": {
-    "fast-xml-parser": "^5.2.2"
+    "fast-xml-parser": "^5.2.2",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
-    "@types/node": "^22.15.16"
+    "@types/node": "^22.15.16",
+    "@types/pdf-parse": "^1.1.5"
   }
 }

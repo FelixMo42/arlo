@@ -1,7 +1,9 @@
 import { XMLParser } from "fast-xml-parser"
-import { cache } from "../cache.ts"
-import { chat, doTask } from "../ollama.ts"
-import { filterAsync } from "../utils.ts"
+import { cache, withCache } from "../cache.ts"
+import { doTask } from "../ollama.ts"
+import { filterAsync, mapAsync } from "../utils.ts"
+import pdf from "pdf-parse"
+import { console } from "inspector"
 
 const ARXIC_LIBRARIAN_AGENT_YOUARE = `
 You are an expert research assistant who specializes in helping users find academic papers on arXiv.
@@ -61,17 +63,29 @@ interface ArticleHeader {
     summary: string
     published: string
     updated: string
+    pdf: string
 }
 
-const XML_PARSER = new XMLParser()
+interface Article extends ArticleHeader {
+    text: string
+}
+
+const XML_PARSER = new XMLParser({
+    ignoreAttributes: false,
+    trimValues: true,
+})
 
 export async function arxivLibrarianAgent(question: string) {
+    console.info("Querying arXiv librarian agent...")
+
     const query = await doTask(
         ARXIV_LIBRARIAN_AGENT_TASK_SEARCH,
         question
     )
 
     const headers = await queryArXiv(query)
+
+    console.info("Articles found!")
 
     const relevant_headers = await filterAsync(headers, async (header) => {
         const awnser = await doTask(
@@ -82,33 +96,47 @@ export async function arxivLibrarianAgent(question: string) {
             `.trim()
         )
 
-        console.log("=====")
-        console.log("TITLE: ", header.title)
-        console.log("SUMMARY: ", header.summary, "\n")
-        console.log(awnser)
-
         return awnser.trim().endsWith("YES")
     })
 
-    return relevant_headers
+    console.info("Filtered articles!")
+
+    const articles = await mapAsync(relevant_headers, async (header) => ({
+        ...header,
+        text: await pdfToText(header.pdf)
+    }))
+
+    console.info("Converted PDFs to text!")
+
+    return articles
 }
 
 async function queryArXiv(q: string): Promise<ArticleHeader[]> {
     const text = await cache(`${ARXIC_API_URL}?search_query=${q}`)
 
-    return XML_PARSER.parse(text).feed.entry.map((entry: any) => ({
+    return mapAsync(XML_PARSER.parse(text).feed.entry, async (entry: any) => ({
         id: entry.id,
         title: entry.title,
         summary: entry.summary,
         published: entry.published,
-        updated: entry.updated
-    })) as ArticleHeader[]
+        updated: entry.updated,
+        pdf: entry.link.find(l => l["@_title"] === "pdf")["@_href"],
+    }))
+}
+
+function pdfToText(url: string): Promise<string> {
+    return withCache(url, async () => {
+        const article = await fetch(url)
+        const document = await pdf(Buffer.from(await article.arrayBuffer()))
+        return document.text
+    })
 }
 
 async function test() {
     const question = "I'm trying to use an LLM to do automated literature reviews."
-    const query = await arxivLibrarianAgent(question)
-    console.log(query.length)
+    const articles = await arxivLibrarianAgent(question)
+
+    console.log(articles[0].text)
 }
 
 test()
